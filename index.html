@@ -1,40 +1,30 @@
 <!DOCTYPE html>
-<html>
-    <head>
-    	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
-    	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    	
-    	<link rel="stylesheet" href="assets/css/style.css">
-    	<script src="assets/javascript/app.js"></script>
-    </head>
-    <body>
-		<div id="wrapper">
-
-			<div id="display">00:00</div>
-
-    	<div class="container">
-    		<div class="row">
-    			<div class="col-md-2"></div>
-    			<div class="col-md-8">
-    				<div class="main-content">
-    					<h1>Trivia Game Question 1</h1>
-						<div class="questions"></div>
-</div>
-						
-					<div class="row">
-						<div class="col-md-2"></div>
-						<div class="col-md-8">
-							<div class="main-content">
-								<h1>Question 2</h1>
-							<div class="second"></div>
-				
-							</div>
-
-    			</div>
-				<div class="col-md-2"></div>
-    		</div>
-    		<button class="my-button">Score</button>
-    	</div>
-		
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div id="container">
+        <div id="start">Start Trivia Game!</div>
+        <div id="quiz" style="display: none">
+            <div id="question"></div>
+            <div id="qImg"></div>
+            <div id="choices">
+                <div class="choice" id="A" onclick="checkAnswer('A')"></div>
+                <div class="choice" id="B" onclick="checkAnswer('B')"></div>
+                <div class="choice" id="C" onclick="checkAnswer('C')"></div>
+            </div>
+            <div id="timer">
+                <div id="counter"></div>
+                <div id="btimeGauge"></div>
+                <div id="timeGauge"></div>
+            </div>
+            <div id="progress"></div>
+        </div>
+        <div id="scoreContainer" style="display: none"></div>
+    </div>
+    <script src="assets/javascript/app.js"></script>
+</body>
 </html>

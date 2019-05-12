@@ -1,147 +1,153 @@
-$(document).ready(function(){//I need jQuery to run!
+// select all elements
+const start = document.getElementById("start");
+const quiz = document.getElementById("quiz");
+const question = document.getElementById("question");
+const qImg = document.getElementById("qImg");
+const choiceA = document.getElementById("A");
+const choiceB = document.getElementById("B");
+const choiceC = document.getElementById("C");
+const counter = document.getElementById("counter");
+const timeGauge = document.getElementById("timeGauge");
+const progress = document.getElementById("progress");
+const scoreDiv = document.getElementById("scoreContainer");
 
-    window.onload = function() {
-        $('#lap').click(stopwatch.recordLap);
-        $('#stop').click(stopwatch.stop);
-        $('#reset').click(stopwatch.reset);
-        $('#start').click(stopwatch.start);
-    };
+// create our questions
+let questions = [
+    {
+        question : "What kind of dog is this?",
+        imgSrc : "assets/images/deer.jpg",
+        choiceA : "Deer",
+        choiceB : "Husky",
+        choiceC : "Beagle",
+        correct : "A"
+    },{
+        question : "What is the capital of U.S. and A?",
+        imgSrc : "assets/images/dc.jpg",
+        choiceA : "Kazakhstan",
+        choiceB : "D.C.",
+        choiceC : "Texas",
+        correct : "B"
+    },{
+        question : "Hi, my name is ___ ?",
+        imgSrc : "assets/images/borat1.jpg",
+        choiceA : "Slim Shady",
+        choiceB : "Felisha",
+        choiceC : "Borat",
+        correct : "C"
+    }
+];
 
-    var intervalId;
+// create some variables
 
-	var questions = [
-	{
-		question:"What kind of dog is this?",
-		a:"red",
-		b:"purple",
-		c:"blue",
-		d:"yellow",
-		name:"q1",
-		correct:"d",
-	}];
+const lastQuestion = questions.length - 1;
+let runningQuestion = 0;
+let count = 0;
+const questionTime = 10; // 10s
+const gaugeWidth = 150; // 150px
+const gaugeUnit = gaugeWidth / questionTime;
+let TIMER;
+let score = 0;
 
-	var second = [
-		{
-		question:"What kind of cat is this?",
-		e:"1",
-		f:"2",
-		g:"3",
-		h:"4",
-		name:"q2",
-		correct:"1",
-	}];
-	
+// render a question
+function renderQuestion(){
+    let q = questions[runningQuestion];
+    
+    question.innerHTML = "<p>"+ q.question +"</p>";
+    qImg.innerHTML = "<img src="+ q.imgSrc +">";
+    choiceA.innerHTML = q.choiceA;
+    choiceB.innerHTML = q.choiceB;
+    choiceC.innerHTML = q.choiceC;
+}
 
+start.addEventListener("click",startQuiz);
 
-    var clockRunning = true;
+// start quiz
+function startQuiz(){
+    start.style.display = "none";
+    renderQuestion();
+    quiz.style.display = "block";
+    renderProgress();
+    renderCounter();
+    TIMER = setInterval(renderCounter,1000); // 1000ms = 1s
+}
 
-    var stopwatch = {
-        
-        time: 0,
-        lap: 1,
+// render progress
+function renderProgress(){
+    for(let qIndex = 0; qIndex <= lastQuestion; qIndex++){
+        progress.innerHTML += "<div class='prog' id="+ qIndex +"></div>";
+    }
+}
 
-        reset: function() {
-            
-            stopwatch.time= o;
-            stopwatch.lap = 1;
-            $('#display').text('00:00');
-        },
-    start: function() {
-      if(!clockRunning) {
-            intervalid = setInterval(stopwatch.count, 1000);
-       		clockRunning = true;
-            }
-        },
-        stop: function() {
+// counter render
 
-        },
-        count: function() {
-            stopwatch.time++;
+function renderCounter(){
+    if(count <= questionTime){
+        counter.innerHTML = count;
+        timeGauge.style.width = count * gaugeUnit + "px";
+        count++
+    }else{
+        count = 0;
+        // change progress color to red
+        answerIsWrong();
+        if(runningQuestion < lastQuestion){
+            runningQuestion++;
+            renderQuestion();
+        }else{
+            // end the quiz and show the score
+            clearInterval(TIMER);
+            scoreRender();
         }
     }
-	
+}
 
+// checkAnwer
 
-	var generateQuestion = function(obj){
+function checkAnswer(answer){
+    if( answer == questions[runningQuestion].correct){
+        // answer is correct
+        score++;
+        // change progress color to green
+        answerIsCorrect();
+    }else{
+        // answer is wrong
+        // change progress color to red
+        answerIsWrong();
+    }
+    count = 0;
+    if(runningQuestion < lastQuestion){
+        runningQuestion++;
+        renderQuestion();
+    }else{
+        // end the quiz and show the score
+        clearInterval(TIMER);
+        scoreRender();
+    }
+}
 
-		//We want to get here:
-		// <form>
-		// <h2>Question 1:</h2>
-		// <div><input type="radio" name="gender" value="male" checked>Answer 1</div> 
-		// <input type="radio" name="gender" value="female">Answer 2
-		// <input type="radio" name="gender" value="other">Answer 3
-		// </form> 
+// answer is correct
+function answerIsCorrect(){
+    document.getElementById(runningQuestion).style.backgroundColor = "#0f0";
+}
 
-		var form = $("<form>");
-		var question = $('<h2>').text(obj.question);
-		var aDiv = $('<div>');
-		var bDiv = $('<div>');
-		var cDiv = $('<div>');
-		var dDiv = $('<div>');
-		var a = $('<input type="radio">').attr('name', obj.name);
-		aDiv.append(a);
-		aDiv.append(obj.a);
-		var b = $('<input type="radio">').attr('name', obj.name);
-		bDiv.append(b);
-		bDiv.append(obj.b);
-		var c = $('<input type="radio">').attr('name', obj.name);
-		cDiv.append(c);
-		cDiv.append(obj.c);
-		var d = $('<input type="radio">').attr('name', obj.name);
-		dDiv.append(d);
-		dDiv.append(obj.d);
+// answer is Wrong
+function answerIsWrong(){
+    document.getElementById(runningQuestion).style.backgroundColor = "#f00";
+}
 
-		if(obj.correct === "a"){
-			a.attr('correct', "true");
-		}else if(obj.correct === "b"){
-			b.attr('correct', "true");
-		}else if(obj.correct === "c"){
-			c.attr('correct', "true");
-		}else if(obj.correct === "d"){
-			d.attr('correct', "true");
-		}
-
-		form.append(question);
-		form.append(aDiv, bDiv, cDiv, dDiv);
-
-		$('.questions').append(form);
-		
-	}
-
-	var gradeQuestion = function(obj){
-		//check if there are any radios that have been clicked
-		//if it has been checked
-		//find checked radio, check for correct="true" attr
-		console.log("gradeQuestion()", obj);
-		var output = 0;
-		obj.find('input').each(function(){
-		 	if($(this).is(':checked')) {
-		 		console.log("FOUND CHECKED");
-		  		if($(this).attr('correct') === "true"){
-		  			console.log('returning + 1');
-		  			output =  1;//you did it!
-		  		} else{
-		  			console.log('returning - 1');
-		  			output= -1;//WRONG
-		  		}
-		  	}	
-		});
-		return output;
-	}
-
-	var gradePage = function(){
-		console.log("gradePage");
-		var score = 0;
-		$('form').each(function(){
-			console.log("adding ",parseInt(gradeQuestion($(this))), " to score");
-			score += parseInt(gradeQuestion($(this)));
-		})
-		console.log(score);
-		return score;
-	}
-
-	generateQuestion(questions[0]);
-	$('.my-button').click(gradePage);
-
-
-});
+// score render
+function scoreRender(){
+    scoreDiv.style.display = "block";
+    
+    // calculate the amount of question percent answered by the user
+    const scorePerCent = Math.round(100 * score/questions.length);
+    
+    // choose the image based on the scorePerCent
+    let img = (scorePerCent >= 80) ? "assets/images/borat.jpg" :
+              (scorePerCent >= 60) ? "assets/images/borat.jpg" :
+              (scorePerCent >= 40) ? "assets/images/borat.jpg" :
+              (scorePerCent >= 20) ? "assets/images/borat.jpg" :
+              "assets/images/borat.jpg";
+    
+    scoreDiv.innerHTML = "<img src="+ img +">";
+    scoreDiv.innerHTML += "<p>"+ scorePerCent +"%</p>";
+}
